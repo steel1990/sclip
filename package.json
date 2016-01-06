@@ -1,0 +1,9 @@
+{
+  "name": "sclip",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": { "sclip": "index.js" },
+  "author": "",
+  "license": "ISC"
+}
