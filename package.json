@@ -1,6 +1,6 @@
 {
   "name": "sclip",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "commander": "~2.9.0",
     "copy-paste": "~1.1.4"
   }
 }
