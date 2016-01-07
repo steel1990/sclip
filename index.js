@@ -19,7 +19,7 @@ var req = http.request(option, (res) => {
 });
 
 var data = process.argv[process.argv.length - 1];
-if (isCopy) {
+if (!isCopy) {
     req.write(`"${data}"`);
 }
 req.end();
