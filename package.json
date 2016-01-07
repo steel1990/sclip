@@ -1,9 +1,14 @@
 {
   "name": "sclip",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
-  "bin": { "sclip": "index.js" },
+  "bin": {
+    "sclip": "index.js"
+  },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "copy-paste": "~1.1.4"
+  }
 }
