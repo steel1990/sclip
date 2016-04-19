@@ -18,7 +18,8 @@ program
 
 
 var action = function (password) {
-    var option = url.parse('https://crackling-heat-389.firebaseio.com/clipboard.json');
+    // var option = url.parse('https://crackling-heat-389.firebaseio.com/clipboard.json');
+    var option = url.parse('https://clipboard.wilddogio.com/clipboard.json');
     option.method = program.data ? 'PUT' : 'GET';
 
     var req = http.request(option, (res) => {
