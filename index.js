@@ -17,8 +17,12 @@ var pkg = require('./package.json');
 program
     .version(pkg.version)
     .option('-d, --data [value]', 'data for send')
-    .option('--clear', 'clear saved password')
-    .parse(process.argv);
+    .option('--clear', 'clear saved password');
+
+
+action.initCommander(program);
+
+program.parse(process.argv);
 
 
 var start = function (cfg) {
@@ -27,7 +31,7 @@ var start = function (cfg) {
     if (program.data) {
         var data = CryptoJS.AES.encrypt(program.data, cfg.pwd).toString();
         ref.set(`"${data}"`, () => {
-            debug('data save success');
+            console.log('data save success');
             process.exit();
         });
     } else {
@@ -51,19 +55,21 @@ var start = function (cfg) {
     }
 };
 
-if (program.clear) {
-    store.clearLocalConfig();
-} else {
-    store.getConfig({
-        pwd: {
-            type: 'password',
-            message: 'Enter your password:'
-        },
-        wilddogUrl: {
-            type: 'input',
-            message: 'Enter your Wilddog url:'
-        }
-    }).then(cfg => {
-        start(cfg);
-    });
+if (program.rawArgs[2] !== 'action') {
+    if (program.clear) {
+        store.clearLocalConfig();
+    } else {
+        store.getConfig({
+            pwd: {
+                type: 'password',
+                message: 'Enter your password:'
+            },
+            wilddogUrl: {
+                type: 'input',
+                message: 'Enter your Wilddog url:'
+            }
+        }).then(cfg => {
+            start(cfg);
+        });
+    }
 }
