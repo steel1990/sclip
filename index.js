@@ -4,9 +4,13 @@ var http = require('https');
 var url = require('url');
 var ncp = require('copy-paste');
 var program = require('commander');
+var Wilddog = require("wilddog");
+var debug = require('debug')('sclip-index');
+const notifier = require('node-notifier');
 
 var CryptoJS = require("./aes");
-var pwd = require('./pwd');
+var store = require('./store');
+var action = require('./action');
 
 var pkg = require('./package.json');
  
@@ -17,30 +21,49 @@ program
     .parse(process.argv);
 
 
-var action = function (password) {
-    // var option = url.parse('https://crackling-heat-389.firebaseio.com/clipboard.json');
-    var option = url.parse('https://clipboard.wilddogio.com/clipboard.json');
-    option.method = program.data ? 'PUT' : 'GET';
-
-    var req = http.request(option, (res) => {
-        res.on('data', (data) => {
-            data = JSON.parse(data);
-            data = CryptoJS.AES.decrypt(data, password).toString(CryptoJS.enc.Utf8);
-            ncp.copy(data, () => console.log('copy ' + data + ' suc'));
-        });
-        res.on('end', () => console.log('suc'));
-        res.on('error', (err) => console.log('error', err));
-    });
+var start = function (cfg) {
+    var ref = new Wilddog(cfg.wilddogUrl);
 
     if (program.data) {
-        var data = CryptoJS.AES.encrypt(program.data, password).toString();
-        req.write(`"${data}"`);
+        var data = CryptoJS.AES.encrypt(program.data, cfg.pwd).toString();
+        ref.set(`"${data}"`, () => {
+            debug('data save success');
+            process.exit();
+        });
+    } else {
+        ref.on('value', (data, err) => {
+            if (!err) {
+                data = data.val();
+                if (data[0] === '"') {
+                    data = JSON.parse(data);
+                }
+                data = CryptoJS.AES.decrypt(data, cfg.pwd).toString(CryptoJS.enc.Utf8);
+                ncp.copy(data, () => {
+                    var msg = `copy ${data} suc`;
+                    debug(msg);
+                    notifier.notify(msg);
+                });
+                action.check(data);
+            } else {
+                debug('error', err);
+            }
+        });
     }
-    req.end();
 };
 
 if (program.clear) {
-    pwd.clearPassword();
+    store.clearLocalConfig();
 } else {
-    pwd.getPassword(action);
+    store.getConfig({
+        pwd: {
+            type: 'password',
+            message: 'Enter your password:'
+        },
+        wilddogUrl: {
+            type: 'input',
+            message: 'Enter your Wilddog url:'
+        }
+    }).then(cfg => {
+        start(cfg);
+    });
 }

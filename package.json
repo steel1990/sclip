@@ -1,6 +1,6 @@
 {
   "name": "sclip",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -11,7 +11,10 @@
   "dependencies": {
     "commander": "~2.9.0",
     "copy-paste": "~1.1.4",
+    "debug": "^2.2.0",
     "fs-extra": "~0.26.4",
-    "inquirer": "~0.11.1"
+    "inquirer": "^1.1.0",
+    "node-notifier": "~4.6.0",
+    "wilddog": "~0.7.0"
   }
 }
