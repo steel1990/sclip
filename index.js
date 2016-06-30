@@ -63,14 +63,17 @@ var start = function (cfg) {
 
 if (program.rawArgs[2] !== 'action') {
     if (program.clear) {
-        store.clearLocalConfig();
+        store.setLocalConfigForKey('pwd', '');
+        store.setLocalConfigForKey('wilddogUrl', '');
     } else {
         store.getConfig({
             pwd: {
+                key: 'pwd',
                 type: 'password',
                 message: 'Enter your password:'
             },
             wilddogUrl: {
+                key: 'wilddogUrl',
                 type: 'input',
                 message: 'Enter your Wilddog url:'
             }

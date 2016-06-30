@@ -38,6 +38,7 @@ function clearLocalConfig(config) {
 
 function getInput(opt) {
     var key = opt.key;
+    console.log(opt);
     return inquirer.prompt({
         type: opt.type,
         name: key,
