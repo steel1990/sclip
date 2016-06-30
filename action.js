@@ -37,6 +37,12 @@ function addAction(name, cmd) {
     console.log(`${name} action was added`);
 }
 
+function setAction(name, cmd) {
+    actionList[name] = cmd;
+    store.setLocalConfigForKey('actions', actionList);
+    console.log(`${name} action was seted`);
+}
+
 function deleteAction(name) {
     if (!actionList[name]) {
         console.log(`Has no action named ${name}!`);
@@ -55,15 +61,19 @@ function getActionList() {
     }
 }
 
+var actionMap = {
+    add: addAction,
+    set: setAction,
+    rm: deleteAction,
+    list: getActionList,
+    ls: getActionList
+};
+
 exports.initCommander = function (program) {
     program.command('action <name>')
         .option('-n, --name [value]', 'action name to add or remove')
         .option('-c, --cmd [value]', 'action run shell')
         .action((name, options) => {
-            switch(name) {
-                case "add": addAction(options.name, options.cmd); break;
-                case "rm": deleteAction(options.name); break;
-                case "list": getActionList(); break;
-            }
+            actionMap[name] && actionMap[name](options.name, options.cmd);
         })
 }

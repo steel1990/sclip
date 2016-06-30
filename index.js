@@ -17,6 +17,7 @@ var pkg = require('./package.json');
 program
     .version(pkg.version)
     .option('-d, --data [value]', 'data for send')
+    .option('--no_notify')
     .option('--clear', 'clear saved password');
 
 
@@ -45,7 +46,12 @@ var start = function (cfg) {
                 ncp.copy(data, () => {
                     var msg = `copy ${data} suc`;
                     debug(msg);
-                    notifier.notify(msg);
+                    if (!program.no_notify) {
+                        notifier.notify({
+                            title: pkg.name,
+                            message: msg
+                        });
+                    }
                 });
                 action.check(data);
             } else {
