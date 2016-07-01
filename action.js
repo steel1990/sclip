@@ -9,7 +9,24 @@ if (!actionList.sleep) {
 }
 debug('actionList', actionList);
 
-var run = function (cmd) {
+function defaultAction(data) {
+    var map = {
+        say: function (msg) {
+            run(`say "${msg}"`);
+        },
+        shell: function (cmd) {
+            run(cmd);
+        }
+    };
+
+    data = data.split(':');
+    if (map[data[0]]) {
+        map[data[0]](data.slice(1).join(':'));
+        return true;
+    }
+}
+
+function run(cmd) {
     debug('run cmd', cmd);
     exec(cmd, (error, stdout, stderr) => {
         if (error) {
@@ -25,7 +42,11 @@ exports.check = function (data) {
     debug('check', data);
     if (actionList[data]) {
         run(actionList[data]);
+        return true;
+    } else {
+        return defaultAction(data);
     }
+    return false;
 }
 
 function addAction(name, cmd) {

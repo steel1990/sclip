@@ -46,17 +46,18 @@ var start = function (cfg) {
                     data = JSON.parse(data);
                 }
                 data = CryptoJS.AES.decrypt(data, cfg.pwd).toString(CryptoJS.enc.Utf8);
-                ncp.copy(data, () => {
-                    var msg = `copy ${data} suc`;
-                    debug(msg);
-                    if (!program.no_notify) {
-                        notifier.notify({
-                            title: pkg.name,
-                            message: msg
-                        });
-                    }
-                });
-                action.check(data);
+                if (!action.check(data)) {
+                    ncp.copy(data, () => {
+                        var msg = `copy ${data} suc`;
+                        debug(msg);
+                        if (!program.no_notify) {
+                            notifier.notify({
+                                title: pkg.name,
+                                message: msg
+                            });
+                        }
+                    });
+                }
             } else {
                 debug('error', err);
             }
