@@ -27,15 +27,18 @@ program.parse(process.argv);
 
 
 var start = function (cfg) {
+    debug('start', cfg);
     var ref = new Wilddog(cfg.wilddogUrl);
 
     if (program.data) {
+        debug('send data', program.data);
         var data = CryptoJS.AES.encrypt(program.data, cfg.pwd).toString();
         ref.set(`"${data}"`, () => {
             console.log('data save success');
             process.exit();
         });
     } else {
+        debug('watch data');
         ref.on('value', (data, err) => {
             if (!err) {
                 data = data.val();
@@ -63,9 +66,11 @@ var start = function (cfg) {
 
 if (program.rawArgs[2] !== 'action') {
     if (program.clear) {
-        store.setLocalConfigForKey('pwd', '');
-        store.setLocalConfigForKey('wilddogUrl', '');
+        debug('clear');
+        store.clearLocalConfigForKey('pwd');
+        store.clearLocalConfigForKey('wilddogUrl');
     } else {
+        debug('normal');
         store.getConfig({
             pwd: {
                 key: 'pwd',
@@ -78,6 +83,7 @@ if (program.rawArgs[2] !== 'action') {
                 message: 'Enter your Wilddog url:'
             }
         }).then(cfg => {
+            debug('getConfig result', cfg);
             start(cfg);
         });
     }

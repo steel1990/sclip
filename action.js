@@ -10,6 +10,7 @@ if (!actionList.sleep) {
 debug('actionList', actionList);
 
 var run = function (cmd) {
+    debug('run cmd', cmd);
     exec(cmd, (error, stdout, stderr) => {
         if (error) {
             debug('exec error', error);
@@ -21,12 +22,14 @@ var run = function (cmd) {
 };
 
 exports.check = function (data) {
+    debug('check', data);
     if (actionList[data]) {
         run(actionList[data]);
     }
 }
 
 function addAction(name, cmd) {
+    debug('addAction', name, cmd);
     if (actionList[name]) {
         console.log(`Already has a command named ${name}`, actionList[name]);
         console.log(`If your want to delete it, please run "sclip action rm ${name}"!`);
@@ -38,12 +41,14 @@ function addAction(name, cmd) {
 }
 
 function setAction(name, cmd) {
+    debug('setAction', name, cmd);
     actionList[name] = cmd;
     store.setLocalConfigForKey('actions', actionList);
     console.log(`${name} action was seted`);
 }
 
 function deleteAction(name) {
+    debug('deleteAction', name);
     if (!actionList[name]) {
         console.log(`Has no action named ${name}!`);
         return;
@@ -55,6 +60,7 @@ function deleteAction(name) {
 }
 
 function getActionList() {
+    debug('getActionList', actionList);
     console.log('Actions:')
     for (var i in actionList) {
         console.log(`${i}: "${actionList[i]}"`);
@@ -70,10 +76,12 @@ var actionMap = {
 };
 
 exports.initCommander = function (program) {
+    debug('initCommander');
     program.command('action <name>')
         .option('-n, --name [value]', 'action name to add or remove')
         .option('-c, --cmd [value]', 'action run shell')
         .action((name, options) => {
+            debug('action run', name, options.name, options.cmd);
             actionMap[name] && actionMap[name](options.name, options.cmd);
         })
 }
