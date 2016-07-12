@@ -28,7 +28,8 @@ program.parse(process.argv);
 
 var start = function (cfg) {
     debug('start', cfg);
-    var ref = new Wilddog(cfg.wilddogUrl);
+    var wilddogUrl = 'https://' + cfg.wilddogDomain + '.wilddogio.com/' + cfg.wilddogPath;
+    var ref = new Wilddog(wilddogUrl);
 
     if (program.data) {
         debug('send data', program.data);
@@ -69,7 +70,8 @@ if (program.rawArgs[2] !== 'action') {
     if (program.clear) {
         debug('clear');
         store.clearLocalConfigForKey('pwd');
-        store.clearLocalConfigForKey('wilddogUrl');
+        store.clearLocalConfigForKey('wilddogDomain');
+        store.clearLocalConfigForKey('wilddogPath');
     } else {
         debug('normal');
         store.getConfig({
@@ -78,10 +80,15 @@ if (program.rawArgs[2] !== 'action') {
                 type: 'password',
                 message: 'Enter your password:'
             },
-            wilddogUrl: {
-                key: 'wilddogUrl',
+            wilddogDomain: {
+                key: 'wilddogDomain',
                 type: 'input',
-                message: 'Enter your Wilddog url:'
+                message: 'Enter your Wilddog domain:'
+            },
+            wilddogPath: {
+                key: 'wilddogPath',
+                type: 'input',
+                message: 'Enter your Wilddog path(no .json):'
             }
         }).then(cfg => {
             debug('getConfig result', cfg);
