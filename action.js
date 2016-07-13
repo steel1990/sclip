@@ -1,6 +1,7 @@
 const debug = require('debug')('sclip-action');
 const exec = require('child_process').exec;
 
+const Service = require('./service');
 const store = require('./store');
 
 var actionList = store.getLocalConfigByKey('actions', {});
@@ -16,6 +17,17 @@ function defaultAction(data) {
         },
         shell: function (cmd) {
             run(cmd);
+        },
+        check: function () {
+            exec('whoami', (err, stdout) => {
+                var cfg = store.getLocalConfig();
+                Service.send(
+                    cfg.wilddogDomain,
+                    cfg.wilddogPath,
+                    cfg.pwd,
+                    String(String(stdout).replace(/[\n\r]/g, '') + ':' + Date.now())
+                );
+            });
         }
     };
 

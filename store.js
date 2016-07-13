@@ -105,6 +105,7 @@ module.exports = {
     getConfig: getConfig,
     getByKey: getByKey,
     clearLocalConfig: clearLocalConfig,
+    getLocalConfig: getLocalConfig,
     getLocalConfigByKey: getLocalConfigByKey,
     setLocalConfigForKey: setLocalConfigForKey,
     clearLocalConfigForKey: clearLocalConfigForKey

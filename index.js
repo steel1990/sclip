@@ -1,22 +1,22 @@
 #!/usr/bin/env node
 
-var http = require('https');
-var url = require('url');
 var ncp = require('copy-paste');
 var program = require('commander');
-var Wilddog = require("wilddog");
 var debug = require('debug')('sclip-index');
-const notifier = require('node-notifier');
+var notifier = require('node-notifier');
 
-var CryptoJS = require("./aes");
 var store = require('./store');
 var action = require('./action');
+var Service = require('./service');
 
 var pkg = require('./package.json');
  
 program
     .version(pkg.version)
     .option('-d, --data [value]', 'data for send')
+    .option('--domain [value]', 'wilddog domain')
+    .option('--path [value]', 'wilddog path(no .json)')
+    .option('--pwd [value]', 'data AES encrypt password')
     .option('--no_notify')
     .option('--clear', 'clear saved password');
 
@@ -25,42 +25,31 @@ action.initCommander(program);
 
 program.parse(process.argv);
 
-
 var start = function (cfg) {
     debug('start', cfg);
-    var wilddogUrl = 'https://' + cfg.wilddogDomain + '.wilddogio.com/' + cfg.wilddogPath;
-    var ref = new Wilddog(wilddogUrl);
+    var service = new Service(cfg.wilddogDomain, cfg.wilddogPath, cfg.pwd);
 
     if (program.data) {
         debug('send data', program.data);
-        var data = CryptoJS.AES.encrypt(program.data, cfg.pwd).toString();
-        ref.set(`"${data}"`, () => {
+        service.send(program.data, () => {
             console.log('data save success');
             process.exit();
         });
     } else {
         debug('watch data');
-        ref.on('value', (data, err) => {
-            if (!err) {
-                data = data.val();
-                if (data[0] === '"') {
-                    data = JSON.parse(data);
-                }
-                data = CryptoJS.AES.decrypt(data, cfg.pwd).toString(CryptoJS.enc.Utf8);
-                if (!action.check(data)) {
-                    ncp.copy(data, () => {
-                        var msg = `copy ${data} suc`;
-                        debug(msg);
-                        if (!program.no_notify) {
-                            notifier.notify({
-                                title: pkg.name,
-                                message: msg
-                            });
-                        }
-                    });
-                }
-            } else {
-                debug('error', err);
+        service.listen((data) => {
+            debug(`service listen callback ${data}`);
+            if (!action.check(data)) {
+                ncp.copy(data, () => {
+                    var msg = `copy ${data} suc`;
+                    debug(msg);
+                    if (!program.no_notify) {
+                        notifier.notify({
+                            title: pkg.name,
+                            message: msg
+                        });
+                    }
+                });
             }
         });
     }
@@ -72,6 +61,12 @@ if (program.rawArgs[2] !== 'action') {
         store.clearLocalConfigForKey('pwd');
         store.clearLocalConfigForKey('wilddogDomain');
         store.clearLocalConfigForKey('wilddogPath');
+    } else if (program.pwd && program.domain && program.path) {
+        start({
+            pwd: program.pwd,
+            wilddogDomain: program.domain,
+            wilddogPath: program.path
+        });
     } else {
         debug('normal');
         store.getConfig({
