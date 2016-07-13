@@ -14,7 +14,7 @@ var pkg = require('./package.json');
 program
     .version(pkg.version)
     .option('-d, --data [value]', 'data for send')
-    .option('--domain [value]', 'wilddog domain')
+    .option('--sub-domain [value]', 'wilddog sub domain')
     .option('--path [value]', 'wilddog path(no .json)')
     .option('--pwd [value]', 'data AES encrypt password')
     .option('--no_notify')
@@ -61,10 +61,10 @@ if (program.rawArgs[2] !== 'action') {
         store.clearLocalConfigForKey('pwd');
         store.clearLocalConfigForKey('wilddogDomain');
         store.clearLocalConfigForKey('wilddogPath');
-    } else if (program.pwd && program.domain && program.path) {
+    } else if (program.pwd && program.subDomain && program.path) {
         start({
             pwd: program.pwd,
-            wilddogDomain: program.domain,
+            wilddogDomain: program.subDomain,
             wilddogPath: program.path
         });
     } else {
