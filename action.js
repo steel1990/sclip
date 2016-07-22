@@ -1,6 +1,7 @@
 const debug = require('debug')('sclip-action');
 const exec = require('child_process').exec;
 
+const systemMonitor = require('./systemMonitor');
 const Service = require('./service');
 const store = require('./store');
 
@@ -28,6 +29,17 @@ function defaultAction(data) {
                     String(String(stdout).replace(/[\n\r]/g, '') + ':' + Date.now())
                 );
             });
+        },
+        startMonitor: function () {
+            debug('startMonitor');
+            systemMonitor.start((evt) => {
+                debug('monitor detected', `${evt.app}, ${evt.title}`);
+                run('osascript -e "set volume 10" && say "what are you 弄啥嘞" && osascript -e "set volume 2" && pmset sleepnow');
+            });
+        },
+        stopMonitor: function () {
+            debug('stopMonitor');
+            systemMonitor.stop();
         }
     };
 
