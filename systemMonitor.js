@@ -10,10 +10,14 @@ exports.start = function (onChanged) {
         return;
     }
 
+    lastApp = '';
+    lastAppTitle = '';
+
     intervalId = setInterval(() => {
         try {
             monitor.getActiveWindow(evt => {
                 if ((lastApp && lastApp !== evt.app) || (lastAppTitle && lastAppTitle !== evt.title)) {
+                    debug('onChanged', lastApp, lastAppTitle, evt.app, evt.title);
                     onChanged && onChanged(evt);
                 }
                 lastApp = evt.app;

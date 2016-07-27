@@ -35,7 +35,8 @@ function defaultAction(data) {
             systemMonitor.start((evt) => {
                 map.stopMonitor();
                 debug('monitor detected', `${evt.app}, ${evt.title}`);
-                run('osascript -e "set volume 10" && say "what are you 弄啥嘞" && osascript -e "set volume 2" && sleep 1 && pmset sleepnow');
+                console.log('monitor detected', `${evt.app}, ${evt.title}`);
+                run('osascript -e "set volume 10" && say "what are you 弄啥嘞" && osascript -e "set volume 2" && pmset sleepnow');
             });
         },
         stopMonitor: function () {
