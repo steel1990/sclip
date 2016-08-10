@@ -29,7 +29,7 @@ Service.send = function (domain, path, pwd, msg, cb) {
 Service.prototype.send = function (msg, cb) {
     debug('send', msg);
     var data = CryptoJS.AES.encrypt(msg, this.pwd).toString();
-    this.ref.set(`"${data}"`, () => {
+    this.ref.set(`${data}`, () => {
         cb && cb(msg);
     });
 };
